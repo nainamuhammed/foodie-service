@@ -1,0 +1,58 @@
+@startuml
+
+title UpdateUserDetails - UserRepository
+autonumber
+hide footbox
+
+participant UserService
+participant UserRepository #LightSeaGreen
+
+UserService -> UserRepository : UpdateUserDetails(EditBo)
+
+    UserRepository -> UserRepository : Create new instance -> SqlCommand as cmd by passing ("update_user_details",DBConnectionString)
+
+    UserRepository -> UserRepository : Assign cmd.command as CommandType.StoredProcedure
+
+    UserRepository -> UserRepository : Assign cmd.Parameter (id, field, value )
+    
+    alt (DBConnectionString.State == ConnectionState.Closed)
+        UserRepository -> UserRepository : DBConnectionString.Open()
+    end
+
+    UserRepository -> UserRepository : cmd.ExecuteNonQuery()
+    
+    UserRepository -> UserRepository : get out parameter from cmd (Result)
+
+    UserRepository -> UserRepository : DBConnectionString.Close()
+
+    UserRepository -> UserService : Returns Result
+
+
+==Pseudo Code==
+
+hnote across
+
+        ASSIGN SqlCommand cmd = new SqlCommand("update_user_details",DBConnectionString)
+        
+        ASSIGN cmd.command = CommandType.StoredProcedure
+
+        ASSIGN cmd.parameter[id] = id
+
+        ASSIGN cmd.parameter[field] = field
+
+        ASSIGN cmd.parameter[value] = value
+        
+        IF DBConnectionString.State == ConnectionState.Closed
+            DBConnectionString.Open()
+        
+        ASSIGN cmd.ExecuteNonQuery() 
+
+        Assign Result = cmd out parameter(Result)
+
+        DBConnectionString.Close()
+
+        **RETURN Result**
+    
+end note
+
+@enduml

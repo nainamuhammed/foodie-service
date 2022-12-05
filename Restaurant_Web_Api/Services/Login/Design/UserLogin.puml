@@ -1,0 +1,44 @@
+@startuml
+
+title UserLogin - LoginService
+autonumber
+hide footbox
+
+participant ServiceController
+participant LoginService #LightSeaGreen
+participant LoginRepository
+
+alt (try)
+    ServiceController -> LoginService : UserLogin( email, password )
+    LoginService -> LoginRepository : _loginRepository.VerifyUser( email, password )
+    
+
+   
+        LoginRepository -> LoginService : Return (LoginResultBo)
+
+
+    LoginService -> ServiceController : Return ServiceResult - Success(LoginResultBo)
+    
+else #LightGoldenRodYellow ( catch   ) 
+
+    LoginService -> ServiceController : Return ServiceResult - Failure
+end
+
+
+==Pseudo Code==
+
+hnote across
+
+
+TRY
+
+        ASSIGN  LoginResultBo loginResult = _loginRepository.VerifyUser()
+        ** RETURN ServiceResult{ status = Success, data = loginResult } ** 
+       
+CATCH
+
+    
+    **Return ServiceResult  { message = e.message, data= null}**
+    
+end note
+@enduml

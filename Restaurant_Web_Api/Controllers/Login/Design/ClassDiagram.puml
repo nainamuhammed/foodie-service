@@ -1,0 +1,70 @@
+@startuml
+
+class LoginController {
+    + LoginService : ILoginService
+    + UserLogin(string email, sting password) : IActionResult
+    + GoogleLogin (string email, string name) : IActionResult
+    
+} 
+
+package Helpers {
+    Class Utilites {
+        + CheckAuthHeader(Request req) : bool
+    }
+
+    Class ServerConstants {
+        + AuthHeaderKey : string
+    }
+
+    Class ServerResult {
+        + ServerResult : <T>
+    }
+}
+
+package "Services" {
+    interface ILoginService {
+        + UserLogin(string email, sting password): ServiceResult<LoginResultBo>
+        + GoogleLogin(string email, sting name): ServiceResult<UserBo>
+    }
+}
+
+package "Repository" {
+    class LoginRepository {
+    
+        + VerifyUser(string email, string password): LoginResultBo
+        + GoogleLogin(string email, string name) : UserBo
+    }
+}
+
+package Bos{
+        class UserBo {
+        + int Id
+        + string Email
+        + string Name
+        + string PhoneNumber
+        + string Password
+        + DateTime Dob
+        + bool IsDeleted
+    }
+
+    class LoginResultBo{
+        + bool Result
+        + string Message
+        + userBo UserData
+    }
+}
+
+UserBo *-- LoginController : uses
+UserBo *-- LoginRepository : uses
+UserBo *-- ILoginService : uses
+ILoginService *-- LoginController : uses
+ServerResult *-- ILoginService : uses
+Utilites *-- LoginController : uses
+ServerConstants *-- Utilites : uses
+LoginRepository *-- ILoginService
+LoginResultBo *-- LoginRepository : uses
+LoginResultBo *-- ILoginService : uses
+
+
+
+@enduml

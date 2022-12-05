@@ -1,0 +1,44 @@
+@startuml
+
+title GoogleLogin - LoginService
+autonumber
+hide footbox
+
+participant ServiceController
+participant LoginService #LightSeaGreen
+participant LoginRepository
+    
+alt (try)
+    ServiceController -> LoginService : GoogleLogin( email, password )
+    LoginService -> LoginRepository : _loginRepository.GoogleLogin( email, name )
+    
+
+    
+        LoginRepository -> LoginService : Return (userBo)
+
+
+    LoginService -> ServiceController : Return ServiceResult - Success <UserBo>
+    
+else #LightGoldenRodYellow ( catch ) 
+
+    LoginService -> ServiceController : Return ServiceResult - Failure
+end
+
+
+==Pseudo Code==
+
+hnote across
+
+
+TRY
+
+        ASSIGN ServiceResult<UserBo> Result = _loginRepository.GoogleLogin()
+        ** RETURN { status = Success, data = Result } ** 
+       
+CATCH
+
+    Set Response Status Code = 500
+    **Return ServiceResult of new { message = e.message, data= null}**
+    
+end note
+@enduml

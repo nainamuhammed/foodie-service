@@ -1,0 +1,65 @@
+@startuml
+
+title UserLogin - LoginController
+autonumber
+hide footbox
+
+participant request
+participant LoginController #LightSeaGreen
+participant Utilites 
+participant LoginSerivce  
+
+request -> LoginController : GET /login
+
+alt (try block)
+
+    LoginController -> Utilites : Validate Auth Header
+    Utilites -> LoginController : Return( True / False )
+
+    alt (Auth Header- True)
+
+        LoginController -> LoginSerivce : Call LoginService.UserLogin(email, password)
+        LoginSerivce -> LoginController : Return LoginResultBo
+
+        alt#Yellow #LightGreen (Succes : 200)
+
+            LoginController -> request : ok 200 return LoginResultBo
+
+        else #LightGoldenRodYellow (Exception at Service Level : 500)
+
+            LoginController -> request : server error 500 return empty
+        end
+        note left: Uses Extension Resolver Method to return response
+
+    else #LightGoldenRodYellow (Auth Header - False)
+
+     LoginController -> request :Return 401 - UnAuthorized 
+    end
+
+else #LightGoldenRodYellow (catch block)
+    LoginController -> request : Exception at Controller level - Server Error 500 return empty
+end
+
+==Pseudo Code==
+
+hnote across
+Http Authorized Post/login
+
+TRY
+
+    IF Auth Header is Valid then
+
+        ASSIGN ServiceResult<LoginResultBo> loginResult = _loginService.UserLogin()
+        ** RETURN loginResult.FinalResult() ** // extension resolver
+    ELSE
+
+        **Return StatusCode(401)**
+CATCH
+
+    Set Response Status Code = 500
+    **Return JsonResult of new { message = e.message}**
+
+end note
+
+
+@enduml

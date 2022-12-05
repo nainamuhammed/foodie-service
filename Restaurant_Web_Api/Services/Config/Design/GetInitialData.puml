@@ -1,0 +1,43 @@
+@startuml
+title GetInitialData - ConfigService
+autonumber
+hide footbox
+
+participant ServiceController
+participant ConfigService #LightSeaGreen
+participant ConfigRepository
+
+    
+alt (TRY)
+    ServiceController -> ConfigService : GetAppInitialData( platform, version, userId )
+    ConfigService -> ConfigRepository : _configRepository.GetInitialData( platform, version, userId )
+    
+
+    
+        ConfigRepository -> ConfigService : Return (InitialDataBo)
+
+
+    ConfigService -> ServiceController : Return ServiceResult - Sucess(<InitialDataBo>)
+    
+else #LightGoldenRodYellow (CATCH ) 
+
+    ConfigService -> ServiceController : Return ServiceResult - Failure
+end
+
+==Pseudo Code==
+hnote across
+
+
+TRY
+
+    ASSIGN InitialDataBo initialDataresult = _configRepository.GetAppInitialData( platform, version, userId )
+    
+    ** RETURN ServiceResult{ status = Success, data = initialDataresult } ** 
+       
+CATCH
+    **Return ServiceResult { message = e.message, data=null}**
+    
+end note
+
+
+@enduml

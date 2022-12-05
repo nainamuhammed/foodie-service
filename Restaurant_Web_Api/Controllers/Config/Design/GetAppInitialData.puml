@@ -1,0 +1,65 @@
+@startuml
+
+title GetInitialData - ConfigController
+autonumber
+hide footbox
+
+participant Request
+participant ConfigController #LightSeaGreen
+participant Utilites 
+participant ConfigSerivce  
+
+Request -> ConfigController : Get /get_initial
+
+alt (try block)
+
+    ConfigController -> Utilites : Validate Auth Header
+    Utilites -> ConfigController : Return( True / False )
+
+    alt (Auth Header- True)
+
+        ConfigController -> ConfigSerivce : Call _configService.GetAPPInitialData( platform, version, userId  )
+        ConfigSerivce -> ConfigController : Return InitialDataBo
+
+        alt#Yellow #LightGreen (Succes : 200)
+
+            ConfigController -> Request : ok 200 return InitialDataBo
+
+        else #LightGoldenRodYellow (Exception at Service Level : 500)
+
+            ConfigController -> Request : server error 500 return empty
+        end
+
+    note left: Uses Extension Resolver Method to return response
+    else #LightGoldenRodYellow (Auth Header - False)
+
+     ConfigController -> Request :Return 401 - UnAuthorized 
+    end
+
+else #LightGoldenRodYellow (catch block)
+    ConfigController -> Request : Exception at Controller level - Server Error 500 return empty
+end
+
+
+==Pseudo Code==
+
+hnote across
+Http Authorized Get/get_initial
+
+TRY
+
+    IF Auth Header is Valid then
+
+        ASSIGN ServiceResult<InitialDataBo> initialResult = _ConfigService.GetAppInitialData( platform, version, userId)
+        ** RETURN initialResult.FinalResult() ** // extension resolver
+    ELSE
+
+        **Return StatusCode(401)**
+CATCH
+
+    Set Response Status Code = 500
+    **Return JsonResult of new { message = e.message, data=null}**
+
+end note
+
+@enduml

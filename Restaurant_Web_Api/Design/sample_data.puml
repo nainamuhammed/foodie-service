@@ -1,0 +1,27 @@
+@startuml
+
+
+
+
+
+	
+title 
+
+User_Details
+
+| Field Name | Data Type | Field Format | Field Size | Example |
+| id | integer |  | 100 | 2 |
+| Email | VARCHAR | | 30 | 12naina@gmail.com |
+| Dob | DateTime | MM-DD-YYYY | | 07-12-1999 |
+| Name | VARCHAR | | 30 |  Naina Muhammed|
+| PhoneNumber | VARCHAR | | 15 |  8610977309 |
+| IsLocationOn | bit | | 1 | True |
+| IsNotificationOn | bit | | 1 | True |
+| Password | VARCHAR | | 30 |  naina@123 |
+| CreatedOn | DateTime | MM-DD-YYYY | | 06-16-1997 |
+| UpdatedOn | DateTime | MM-DD-YYYY | | 06-16-1997 |
+| IsDeleted | bit | | 1 | True |
+
+end title
+
+@enduml

@@ -1,0 +1,113 @@
+@startuml
+
+title GetInintialData - ConfigRepository
+autonumber
+hide footbox
+
+participant ConfigService
+participant ConfigRepository #LightSeaGreen
+
+ConfigService -> ConfigRepository : GetAppInitialData( platform, version, userId)
+
+
+
+    ConfigRepository -> ConfigRepository : Create new instance -> InitialDataBo as initialData
+
+    ConfigRepository -> ConfigRepository : Create new instance -> SqlCommand as cmd by passing ("get_initial_data",DBConnectionString)
+
+    ConfigRepository -> ConfigRepository : Assign cmd.command as CommandType.StoredProcedure
+
+    ConfigRepository -> ConfigRepository : Assign cmd.Parameter (userId)
+
+    ConfigRepository -> ConfigRepository : Assign cmd.Parameter (version)
+
+    ConfigRepository -> ConfigRepository : Assign cmd.Parameter (platform)
+    
+    alt (DBConnectionString.State == ConnectionState.Closed)
+        ConfigRepository -> ConfigRepository : DBConnectionString.Open()
+    end
+
+    ConfigRepository -> ConfigRepository : cmd.ExecuteNonQuery()
+
+    ConfigRepository -> ConfigRepository : Create new instance -> DataSet as dsRecords
+
+    ConfigRepository -> ConfigRepository : Create new instance -> SqlDataAdapter as adapter
+
+    ConfigRepository -> ConfigRepository : adapter.Fill(dsRecords)
+
+    ConfigRepository -> ConfigRepository : Assign All the Values from dsRecords to initialData.VersionBo & initialData.ConfigBo
+    
+
+    alt ( dsRecords.table[2].row > 0 )
+        
+
+
+        ConfigRepository -> ConfigRepository : Assign All the Values from dsRecords to initialData.UserData 
+        
+         
+    end
+
+    ConfigRepository -> ConfigRepository : DBConnectionString.Close()
+
+
+
+    ConfigRepository -> ConfigService : Returns initialData
+
+
+==Pseudo Code==
+hnote across
+
+    
+        
+        ASSIGN InitialDataBo initialDataBo = new InitialDataBo()
+
+        ASSIGN VersionBo versionData = new VersionBo()
+
+        ASSIGN ConfigBo configData = new ConfigBo()
+
+        ASSIGN DataTable dsRecords = new DataSet()
+
+        ASSIGN SqlDataAdapter adapter = new SqlDataAdapter()
+
+        ASSIGN SqlCommand cmd = new SqlCommand("get_app_initial_data",DBConnectionString)
+        
+        ASSIGN cmd.command = CommandType.StoredProcedure
+
+        ASSIGN cmd.parameter[platform] = platform
+
+        ASSIGN cmd.parameter[version] = version
+
+        ASSIGN cmd.parameter[userId] = userId
+        
+        IF DBConnectionString.State == ConnectionState.Closed
+            DBConnectionString.Open()
+        
+        ASSIGN cmd.ExecuteNonQuery() 
+
+        Assign loginResults.Result = cmd out parameter(Result)
+
+        Assign loginResults.Message = cmd out parameter(Message)
+
+        adapter.Fill(dsRecords)
+
+        ASSIGN dsRecords.table[0] in versionData
+
+        ASSIGN dsRecords.table[1] in configData
+
+        IF( dsRecords.table[2].row > 0 )
+
+            ASSIGN ConfigBo UserBo = new UserBo()
+
+            ASSIGN dsRecords.table[2] in userData
+            
+        DBConnectionString.Close()
+
+        **RETURN loginResults**
+
+   
+    
+end note
+
+
+
+@enduml

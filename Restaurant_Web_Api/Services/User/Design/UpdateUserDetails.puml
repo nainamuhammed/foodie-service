@@ -1,0 +1,46 @@
+@startuml
+
+title UpdateUserDetails - UserService
+autonumber
+hide footbox
+
+participant ServiceController
+participant UserService #LightSeaGreen
+participant UserRepository
+
+
+
+alt (try)
+
+    ServiceController -> UserService : updateUserDetails(EditBo)
+    UserService -> UserRepository : _userRepository.updateUserDetails(EditBo)
+    
+   
+        UserRepository -> UserService : Return (bool)
+
+
+    UserService -> ServiceController : Return ServiceResult  - Success <bool>
+    
+else #LightGoldenRodYellow ( catch ) 
+
+    UserService -> ServiceController : Return ServiceResult - Failure
+end
+
+
+==Pseudo Code==
+hnote across
+
+
+TRY
+
+        ASSIGN bool updateResult = _userRepository.UpdateUserDetails( EditBo )
+        ** RETURN ServiceResult{ status = Success, data = updateResult } ** 
+       
+CATCH
+
+   
+    **Return ServiceResult{ message = e.message, data= null}**
+    
+end note
+
+@enduml

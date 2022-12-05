@@ -1,0 +1,81 @@
+@startuml
+class ConfigController {
+    + ConfigService : IConfigService
+    + GetAppInitialData(string platform, float version, int userId) : IActionResult
+    
+} 
+
+package Helpers {
+    Class Utilites {
+        + CheckAuthHeader(Request req) : bool
+    }
+
+    Class ServerConstants {
+        + AuthHeaderKey : string
+    }
+
+    Class ServerResult {
+        + ServerResult : <T>
+    }
+}
+
+package "Services" {
+    interface IConfigService {
+        + GetAppInitialData(string platform, float version, int userId) : ServiceResult<InitialDataBo>
+    }
+}
+
+package "Repository" {
+    class ConfigRepository {
+        + GetAppInitialData() : <InitialDataBo>
+        
+    }
+}
+
+package Bos{
+        class UserBo {
+        + int Id
+        + string Email
+        + string Name
+        + string PhoneNumber
+        + string Password
+        + DateTime Dob
+        + bold IsLocationOn
+        + bool IsNotificationOn
+        + bool IsDeleted
+    }
+
+    class ConfigBo{
+        + string ConfigDetails
+    }
+
+    class versionBo{
+        + string Result
+        + string Version
+        + bool MustUpdate
+    }
+
+    class InitialDataBo{
+        + ConfigBo ConfigData
+        + versionBo versionData
+        + UserBo UserData
+    }
+}
+
+ConfigBo *-- InitialDataBo : uses
+versionBo *-- InitialDataBo : uses
+UserBo *-- InitialDataBo : uses
+
+Utilites *-- ConfigController : uses
+ServerConstants *-- Utilites : uses
+ServerResult *-- IConfigService : uses
+IConfigService *-- ConfigController : uses
+ConfigRepository *-- IConfigService : uses
+
+InitialDataBo *-- ConfigRepository : uses
+InitialDataBo *-- IConfigService : uses
+
+
+
+
+@enduml

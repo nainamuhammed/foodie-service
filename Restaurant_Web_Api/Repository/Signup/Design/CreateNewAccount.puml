@@ -1,0 +1,89 @@
+@startuml
+
+title CreateNewAccount - SignupRepository
+autonumber
+hide footbox
+
+participant SignupService
+participant SignupRepository #LightSeaGreen
+
+SignupService -> SignupRepository : CreateNewAccount( email, password )
+
+    SignupRepository -> SignupRepository : Create new instance -> SqlCommand as cmd by passing ("user_signup",DBConnectionString)
+
+    SignupRepository -> SignupRepository : Assign cmd.command as CommandType.StoredProcedure
+
+    SignupRepository -> SignupRepository : Assign cmd.Parameter (Pass All Bo data as parameter)
+    
+    alt (DBConnectionString.State == ConnectionState.Closed)
+        SignupRepository -> SignupRepository : DBConnectionString.Open()
+    end
+
+    SignupRepository -> SignupRepository : cmd.ExecuteNonQuery()
+    
+    SignupRepository -> SignupRepository : get out parameter from cmd (Result)
+    SignupRepository -> SignupRepository : Create new instance for LoginResultBo
+
+        alt (Retult = True)
+            SignupRepository -> SignupRepository : Create new instance -> SqlDataAdapter as adapter
+            SignupRepository -> SignupRepository : Create new instance -> DataTable as dsRecords
+            SignupRepository -> SignupRepository : adapter.Fill(dsRecords)
+            SignupRepository -> SignupRepository : ASSIGN loginResultBo.Result = true
+            SignupRepository -> SignupRepository : ASSIGN loginResultBo.Message = account created
+            SignupRepository -> SignupRepository : ASSIGN loginResultBo.userBo = dsRecord
+        else
+
+            SignupRepository -> SignupRepository : Assign All the Values from dsRecords to UserBo 
+            SignupRepository -> SignupRepository : ASSIGN loginResultBo.Result = true
+            SignupRepository -> SignupRepository : ASSIGN loginResultBo.Message = account created
+            SignupRepository -> SignupRepository : ASSIGN loginResultBo.userBo = Null
+
+        end
+    end
+
+    SignupRepository -> SignupRepository : DBConnectionString.Close()
+
+
+    SignupRepository -> SignupService : Returns loginResultBo
+
+==Pseudo Code==
+
+hnote across
+
+        ASSIGN SqlCommand cmd = new SqlCommand("user_signup",DBConnectionString)
+        
+        ASSIGN cmd.command = CommandType.StoredProcedure
+
+        ASSIGN cmd.parameter[UsrBo] = userBo
+        
+        IF DBConnectionString.State == ConnectionState.Closed
+            DBConnectionString.Open()
+        
+        ASSIGN cmd.ExecuteNonQuery() 
+
+        Assign Result = cmd out parameter(Result)
+
+        DBConnectionString.Close()
+        ASSIGN LoginResultBo loginResultBo = new LoginResultBo
+        IF( Result == True )
+            ASSIGN DataTable dsRecords = new DataTable()
+            ASSIGN SqlDataAdapter adapter = new SqlDataAdapter()
+            adapter.Fill(dsRecords)
+            
+            ASSIGN loginResultBo.Result = True
+            ASSIGN loginResultBo.Message =Account created
+            ASSIGN loginResultBo.userBo = dsRecords
+        ELSE
+            
+            ASSIGN loginResultBo.Result = False
+            ASSIGN loginResultBo.Message =email already exist
+            ASSIGN loginResultBo.userBo = null
+
+
+        **RETURN Result**
+
+    
+end note
+
+
+@enduml

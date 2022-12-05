@@ -1,0 +1,45 @@
+@startuml
+
+title CreateAccount - SignupService
+autonumber
+hide footbox
+
+participant ServiceController
+participant SignupService #LightSeaGreen
+participant SignupRepository
+
+alt (try)
+    ServiceController -> SignupService : CreateAccount( UserBo)
+
+    SignupService -> SignupRepository : _signupRepository.CreateNewAccount( UserBo )
+    
+
+  
+        SignupRepository -> SignupService : Return (LoginResultBo)
+
+
+    SignupService -> ServiceController : Return ServiceResult - Success <LoginResultBo>
+    
+else #LightGoldenRodYellow ( catch   ) 
+
+    SignupService -> ServiceController : Return ServiceResult - Failure
+end
+
+==Pseudo Code==
+hnote across
+
+
+TRY
+
+        ASSIGN LoginResultBo signupResult = _signupRepository.CreateNewAccount(UserData)
+        ** RETURN ServiceResult{ status = Success, data = signupResult } ** 
+       
+CATCH
+
+   
+    **Return ServiceResult{ message = e.message. data=Null }**
+    
+end note
+
+
+@enduml

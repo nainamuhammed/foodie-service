@@ -1,0 +1,65 @@
+@startuml
+
+title UpdateUserDetails - UserController
+autonumber
+hide footbox
+
+participant Request
+participant UserController #LightSeaGreen
+participant Utilites 
+participant UserSerivce 
+
+Request -> UserController : Get /edit
+
+alt (try block)
+
+    UserController -> Utilites : Validate Auth Header
+    Utilites -> UserController : Return( True / False )
+
+    alt (Auth Header- True)
+
+        UserController -> UserSerivce : Call _userService.UpdateUserDetails(editBo)
+        UserSerivce -> UserController : Return bool
+
+        alt#Yellow #LightGreen (Succes : 200)
+
+            UserController -> Request : ok 200 return bool
+
+        else #LightGoldenRodYellow (Exception at Service Level : 500)
+
+            UserController -> Request : server error 500 return empty
+        end
+
+    else #LightGoldenRodYellow (Auth Header - False)
+
+     UserController -> Request :Return 401 - UnAuthorized 
+
+    end
+
+else #LightGoldenRodYellow (catch block)
+    UserController -> Request : Exception at Controller level - Server Error 500 return empty
+end
+
+
+==Pseudo Code==
+
+hnote across
+Http Authorized Get/edit
+
+TRY
+
+    IF Auth Header is Valid then
+
+        ASSIGN ServiceResult<bool> result = _userService.UpdateUserDetails(EditBo)
+        ** RETURN result.FinalResult() ** // extension resolver
+    ELSE
+
+        **Return StatusCode(401)**
+CATCH
+
+    Set Response Status Code = 500
+    **Return IActionResult of new { message = e.message, data = null}**
+
+end note
+
+@enduml

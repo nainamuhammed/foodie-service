@@ -1,0 +1,62 @@
+@startuml
+
+class UserController {
+    + UserService : IUserService
+    + UpdateUserDetails(int userId, string field, string value) : IActionResult
+   
+    
+} 
+
+package Helpers {
+    Class Utilites {
+        + CheckAuthHeader(Request req) : bool
+    }
+
+    Class ServerConstants {
+        + AuthHeaderKey : string
+    }
+
+    Class ServerResult {
+        + ServerResult : <T>
+    }
+}
+
+package "Services" {
+    interface IUserService {
+        + UpdateUserDetails(EditBo ) : ServiceResult<bool>
+        
+    }
+}
+
+package "Repository" {
+    class UserRepository {
+        + UpdateUserDetails(EditBo ) : bool
+      
+ 
+    }
+}
+
+Package Bo{
+    
+    Class EditBo{
+        + int userId
+        + string field
+        + string value
+    }
+}
+
+
+
+EditBo *-- UserController : uses
+EditBo *-- UserRepository : uses
+EditBo *-- IUserService : uses
+IUserService *-- UserController : uses
+ServerResult *-- IUserService : uses
+Utilites *-- UserController : uses
+ServerConstants *-- Utilites : uses
+UserRepository *-- IUserService
+
+
+
+
+@enduml

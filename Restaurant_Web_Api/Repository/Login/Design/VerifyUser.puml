@@ -1,0 +1,88 @@
+@startuml
+title VerifyUser - LoginRepository
+autonumber
+hide footbox
+
+participant LoginService
+participant LoginRepository #LightSeaGreen
+
+LoginService -> LoginRepository : VerifyUser( email, password )
+
+    
+    LoginRepository -> LoginRepository : Create new instance -> LoginResultBo as loginResults
+
+    LoginRepository -> LoginRepository : Create new instance -> SqlCommand as cmd by passing ("user_login_verification",DBConnectionString)
+
+    LoginRepository -> LoginRepository : Assign cmd.command as CommandType.StoredProcedure
+
+    LoginRepository -> LoginRepository : Assign cmd.Parameter (email)
+
+    LoginRepository -> LoginRepository : Assign cmd.Parameter (password)
+
+        LoginRepository -> LoginRepository : get out parameter from cmd (Result)
+
+    LoginRepository -> LoginRepository : get out parameter from cmd (Message)
+    
+    alt (DBConnectionString.State == ConnectionState.Closed)
+        LoginRepository -> LoginRepository : DBConnectionString.Open()
+    end
+
+    LoginRepository -> LoginRepository : cmd.ExecuteNonQuery()
+
+    LoginRepository -> LoginRepository : get Result value
+
+    LoginRepository -> LoginRepository : get Message value
+    
+    alt (Retult = True)
+        LoginRepository -> LoginRepository : Create new instance -> SqlDataAdapter as adapter
+        LoginRepository -> LoginRepository : Create new instance -> DataTable as dsRecords
+        LoginRepository -> LoginRepository : adapter.Fill(dsRecords)
+        LoginRepository -> LoginRepository : Assign All the Values from dsRecords to loginResults.UserData 
+    end
+
+    LoginRepository -> LoginRepository : DBConnectionString.Close()
+
+    LoginRepository -> LoginRepository : Assign result to loginResults.Result.
+
+    LoginRepository -> LoginRepository : Assign message to loginResults.Message.
+
+    LoginRepository -> LoginService : Returns loginResults
+
+
+
+
+==Pseudo Code==
+hnote across
+  
+        ASSIGN loginResults = new LoginResultBo()
+
+        ASSIGN SqlCommand cmd = new SqlCommand("user_login_verification",DBConnectionString)
+        
+        ASSIGN cmd.command = CommandType.StoredProcedure
+
+        ASSIGN cmd.parameter[Email] = email
+
+        ASSIGN cmd.parameter[PAssword] = password
+        
+        IF DBConnectionString.State == ConnectionState.Closed
+            DBConnectionString.Open()
+        
+        ASSIGN cmd.ExecuteNonQuery() 
+
+        Assign loginResults.Result = cmd out parameter(Result)
+
+        Assign loginResults.Message = cmd out parameter(Message)
+
+        IF( loginResults.Result == True )
+            ASSIGN DataTable dsRecords = new DataTable()
+            ASSIGN SqlDataAdapter adapter = new SqlDataAdapter()
+            adapter.Fill(dsRecords)
+
+        DBConnectionString.Close()
+
+        **RETURN loginResults**
+   
+    
+end note
+
+@enduml
