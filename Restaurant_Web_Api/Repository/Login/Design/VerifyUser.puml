@@ -33,7 +33,7 @@ LoginService -> LoginRepository : VerifyUser( email, password )
 
     LoginRepository -> LoginRepository : get Message value
     
-    alt (Retult = True)
+    alt (Result = True)
         LoginRepository -> LoginRepository : Create new instance -> SqlDataAdapter as adapter
         LoginRepository -> LoginRepository : Create new instance -> DataTable as dsRecords
         LoginRepository -> LoginRepository : adapter.Fill(dsRecords)

@@ -13,7 +13,9 @@ UserService -> UserRepository : UpdateUserDetails(EditBo)
 
     UserRepository -> UserRepository : Assign cmd.command as CommandType.StoredProcedure
 
-    UserRepository -> UserRepository : Assign cmd.Parameter (id, field, value )
+    UserRepository -> UserRepository : Assign cmd.Parameter (id)
+    UserRepository -> UserRepository : Assign cmd.Parameter (field)
+    UserRepository -> UserRepository : Assign cmd.Parameter (value )
     
     alt (DBConnectionString.State == ConnectionState.Closed)
         UserRepository -> UserRepository : DBConnectionString.Open()

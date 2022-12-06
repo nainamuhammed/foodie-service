@@ -1,0 +1,15 @@
+@startuml
+
+title 
+
+version
+
+| Field Name | Data Type | Field Format | Field Size | Example |
+| Platform | VARCHAR |  | 10 | ios |
+| Version | VARCHAR | | 10 | 2.1 |
+| MustUpdate | Bit |  | | 1 |
+
+
+end title
+
+@enduml

@@ -36,7 +36,7 @@ ConfigService -> ConfigRepository : GetAppInitialData( platform, userId)
     ConfigRepository -> ConfigRepository : Assign All the Values from dsRecords to initialData.VersionBo & initialData.ConfigBo
     
 
-    alt ( userId > 0 )
+    alt ( dsRecords.table[2].row > 0 )
         
 
 
@@ -46,8 +46,6 @@ ConfigService -> ConfigRepository : GetAppInitialData( platform, userId)
     end
 
     ConfigRepository -> ConfigRepository : DBConnectionString.Close()
-
-
 
     ConfigRepository -> ConfigService : Returns initialData
 
@@ -73,6 +71,7 @@ hnote across
 
         ASSIGN cmd.parameter[platform] = platform
 
+
         ASSIGN cmd.parameter[userId] = userId
         
         IF DBConnectionString.State == ConnectionState.Closed
@@ -90,7 +89,7 @@ hnote across
 
         ASSIGN dsRecords.table[1] in configData
 
-        IF( userId > 0 )
+        IF( dsRecords.table[2].row > 0 )
 
             ASSIGN ConfigBo UserBo = new UserBo()
 

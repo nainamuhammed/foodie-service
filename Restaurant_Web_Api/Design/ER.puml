@@ -18,4 +18,12 @@ entity "User" {
     UpdatedOn : DateTime
 }
 
+
+entity "Version"{
+    --
+    Platform : VARCHAR (10)
+    Version : VARCHAR (10)
+    MustUpdate : bit
+}
+
 @enduml

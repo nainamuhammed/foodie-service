@@ -7,14 +7,19 @@ hide footbox
 participant SignupService
 participant SignupRepository #LightSeaGreen
 
-SignupService -> SignupRepository : CreateNewAccount( email, password )
+SignupService -> SignupRepository : CreateNewAccount( UserBo, googleUser )
 
     SignupRepository -> SignupRepository : Create new instance -> SqlCommand as cmd by passing ("user_signup",DBConnectionString)
 
     SignupRepository -> SignupRepository : Assign cmd.command as CommandType.StoredProcedure
 
-    SignupRepository -> SignupRepository : Assign cmd.Parameter (Pass All Bo data as parameter)
-    SignupRepository -> SignupRepository : Assign cmd.Parameter (googleUser)
+    SignupRepository -> SignupRepository : Assign cmd.Parameter (Pass All UserBo data as parameter)
+
+    SignupRepository -> SignupRepository : Assign cmd.Parameter ( googleUser)
+
+    SignupRepository -> SignupRepository : set out parameter to cmd (Result)
+
+    SignupRepository -> SignupRepository : set out parameter to cmd (Message)
     
     alt (DBConnectionString.State == ConnectionState.Closed)
         SignupRepository -> SignupRepository : DBConnectionString.Open()
@@ -23,24 +28,29 @@ SignupService -> SignupRepository : CreateNewAccount( email, password )
     SignupRepository -> SignupRepository : cmd.ExecuteNonQuery()
     
     SignupRepository -> SignupRepository : get out parameter from cmd (Result)
-    SignupRepository -> SignupRepository : Create new instance for LoginResultBo
 
-        alt (Retult = True)
+    SignupRepository -> SignupRepository : get out parameter from cmd (Message)
+
+    SignupRepository -> SignupRepository : Create new instance for LoginResultBo
+    SignupRepository -> SignupRepository : ASSIGN loginResultBo.Result = Result
+    SignupRepository -> SignupRepository : ASSIGN loginResultBo.Message = Message
+
+
+
+        alt (Result = True)
+
             SignupRepository -> SignupRepository : Create new instance -> SqlDataAdapter as adapter
             SignupRepository -> SignupRepository : Create new instance -> DataTable as dsRecords
             SignupRepository -> SignupRepository : adapter.Fill(dsRecords)
-            SignupRepository -> SignupRepository : ASSIGN loginResultBo.Result = true
-            SignupRepository -> SignupRepository : ASSIGN loginResultBo.Message = account created
+
             SignupRepository -> SignupRepository : ASSIGN loginResultBo.userBo = dsRecord
         else
 
-            SignupRepository -> SignupRepository : Assign All the Values from dsRecords to UserBo 
-            SignupRepository -> SignupRepository : ASSIGN loginResultBo.Result = false
-            SignupRepository -> SignupRepository : ASSIGN loginResultBo.Message = email already exist
             SignupRepository -> SignupRepository : ASSIGN loginResultBo.userBo = Null
+        end    
 
-        end
-    end
+        
+    
 
     SignupRepository -> SignupRepository : DBConnectionString.Close()
 
@@ -56,32 +66,38 @@ hnote across
         ASSIGN cmd.command = CommandType.StoredProcedure
 
         ASSIGN cmd.parameter[UsrBo] = userBo
+
+        ASSIGN cmd.parameter[googleUser] = googleUser
         
         IF DBConnectionString.State == ConnectionState.Closed
-            DBConnectionString.Open()
-        
+            DBConnectionString.Open()        
+
+        Set out parameter Result
+
+        Set out parameter Message
+
         ASSIGN cmd.ExecuteNonQuery() 
 
-        Assign Result = cmd out parameter(Result)
+        Assign Result = get cmd out parameter(Result)
 
-        DBConnectionString.Close()
+        Assign Message = get cmd out parameter(Message)
+
+        
+        ASSIGN loginResultBo.Result = Result
+        ASSIGN loginResultBo.Message =Message
         ASSIGN LoginResultBo loginResultBo = new LoginResultBo
         IF( Result == True )
             ASSIGN DataTable dsRecords = new DataTable()
             ASSIGN SqlDataAdapter adapter = new SqlDataAdapter()
-            adapter.Fill(dsRecords)
-            
-            ASSIGN loginResultBo.Result = True
-            ASSIGN loginResultBo.Message =Account created
+            adapter.Fill(dsRecords)            
             ASSIGN loginResultBo.userBo = dsRecords
         ELSE
-            
-            ASSIGN loginResultBo.Result = False
-            ASSIGN loginResultBo.Message = email already exist
+
             ASSIGN loginResultBo.userBo = null
 
+        DBConnectionString.Close()
 
-        **RETURN Result**
+        **RETURN loginResultBo**
 
     
 end note
