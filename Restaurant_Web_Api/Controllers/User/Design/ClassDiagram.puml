@@ -2,7 +2,7 @@
 
 class UserController {
     + UserService : IUserService
-    + UpdateUserDetails(int userId, string field, string value) : IActionResult
+    + UpdateUserDetails(EditBo) : IActionResult
    
     
 } 
