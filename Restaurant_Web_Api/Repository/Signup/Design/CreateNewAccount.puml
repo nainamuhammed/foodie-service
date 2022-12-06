@@ -14,6 +14,7 @@ SignupService -> SignupRepository : CreateNewAccount( email, password )
     SignupRepository -> SignupRepository : Assign cmd.command as CommandType.StoredProcedure
 
     SignupRepository -> SignupRepository : Assign cmd.Parameter (Pass All Bo data as parameter)
+    SignupRepository -> SignupRepository : Assign cmd.Parameter (googleUser)
     
     alt (DBConnectionString.State == ConnectionState.Closed)
         SignupRepository -> SignupRepository : DBConnectionString.Open()
@@ -34,8 +35,8 @@ SignupService -> SignupRepository : CreateNewAccount( email, password )
         else
 
             SignupRepository -> SignupRepository : Assign All the Values from dsRecords to UserBo 
-            SignupRepository -> SignupRepository : ASSIGN loginResultBo.Result = true
-            SignupRepository -> SignupRepository : ASSIGN loginResultBo.Message = account created
+            SignupRepository -> SignupRepository : ASSIGN loginResultBo.Result = false
+            SignupRepository -> SignupRepository : ASSIGN loginResultBo.Message = email already exist
             SignupRepository -> SignupRepository : ASSIGN loginResultBo.userBo = Null
 
         end
@@ -76,7 +77,7 @@ hnote across
         ELSE
             
             ASSIGN loginResultBo.Result = False
-            ASSIGN loginResultBo.Message =email already exist
+            ASSIGN loginResultBo.Message = email already exist
             ASSIGN loginResultBo.userBo = null
 
 

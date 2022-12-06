@@ -1,0 +1,19 @@
+@startuml
+
+title update_user_details- Store Procedure
+autonumber
+hide footbox
+participant UserRepositary
+participant SQL
+
+UserRepositary -> SQL : update_user_details( userId, field, value ) 
+
+
+== Pseudo Code==
+hnote across
+
+update user table set field = value where userId = userId
+
+
+end note
+@enduml

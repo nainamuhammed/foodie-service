@@ -18,7 +18,7 @@ alt (try block)
 
     alt (Auth Header- True)
 
-        ConfigController -> ConfigSerivce : Call _configService.GetAPPInitialData( platform, version, userId  )
+        ConfigController -> ConfigSerivce : Call _configService.GetAPPInitialData( platform, userId  )
         ConfigSerivce -> ConfigController : Return InitialDataBo
 
         alt#Yellow #LightGreen (Succes : 200)
@@ -50,7 +50,7 @@ TRY
 
     IF Auth Header is Valid then
 
-        ASSIGN ServiceResult<InitialDataBo> initialResult = _ConfigService.GetAppInitialData( platform, version, userId)
+        ASSIGN ServiceResult<InitialDataBo> initialResult = _ConfigService.GetAppInitialData( platform, userId)
         ** RETURN initialResult.FinalResult() ** // extension resolver
     ELSE
 

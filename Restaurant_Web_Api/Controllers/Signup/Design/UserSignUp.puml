@@ -16,7 +16,7 @@ alt (TRY)
     Utilites -> SignupController : Return( True / False )
 
     alt ( Auth Header True)
-        SignupController -> SignupService : _signupService.CreateAccount(UserData)
+        SignupController -> SignupService : _signupService.CreateAccount(UserData, googleUser)
         
         SignupService -> SignupController : Return bool
 
@@ -45,7 +45,7 @@ TRY
 
     IF Auth Header is Valid then
 
-        ASSIGN ServiceResult<bool> signupResult = _signupService.CreateAccount(UserData)
+        ASSIGN ServiceResult<bool> signupResult = _signupService.CreateAccount(UserData, googleUser)
         ** RETURN signupResult.FinalResult() ** // extension resolver
     ELSE
 

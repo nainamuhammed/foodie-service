@@ -7,7 +7,7 @@ hide footbox
 participant ConfigService
 participant ConfigRepository #LightSeaGreen
 
-ConfigService -> ConfigRepository : GetAppInitialData( platform, version, userId)
+ConfigService -> ConfigRepository : GetAppInitialData( platform, userId)
 
 
 
@@ -18,8 +18,6 @@ ConfigService -> ConfigRepository : GetAppInitialData( platform, version, userId
     ConfigRepository -> ConfigRepository : Assign cmd.command as CommandType.StoredProcedure
 
     ConfigRepository -> ConfigRepository : Assign cmd.Parameter (userId)
-
-    ConfigRepository -> ConfigRepository : Assign cmd.Parameter (version)
 
     ConfigRepository -> ConfigRepository : Assign cmd.Parameter (platform)
     
@@ -38,7 +36,7 @@ ConfigService -> ConfigRepository : GetAppInitialData( platform, version, userId
     ConfigRepository -> ConfigRepository : Assign All the Values from dsRecords to initialData.VersionBo & initialData.ConfigBo
     
 
-    alt ( dsRecords.table[2].row > 0 )
+    alt ( userId > 0 )
         
 
 
@@ -75,8 +73,6 @@ hnote across
 
         ASSIGN cmd.parameter[platform] = platform
 
-        ASSIGN cmd.parameter[version] = version
-
         ASSIGN cmd.parameter[userId] = userId
         
         IF DBConnectionString.State == ConnectionState.Closed
@@ -94,7 +90,7 @@ hnote across
 
         ASSIGN dsRecords.table[1] in configData
 
-        IF( dsRecords.table[2].row > 0 )
+        IF( userId > 0 )
 
             ASSIGN ConfigBo UserBo = new UserBo()
 

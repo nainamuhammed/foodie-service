@@ -1,0 +1,48 @@
+@startuml
+
+title user_signup- Store Procedure
+autonumber
+hide footbox
+participant SignupRepositary
+participant SQL
+
+SignupRepositary -> SQL : user_signup( userBo, googleUser ) 
+
+
+== Pseudo Code==
+hnote across
+
+Declare alreadyExist as bit
+Declare result as bit out
+Declare message as string out
+
+set alreadyExist = selecte row count which is match with given email
+
+
+IF googleUser==true
+    IF alreadyExist !=0
+
+        set result = true
+        set message = account created
+        create a new user account
+        select the newly created user account by using scope identity
+
+    ELSE
+
+        set result = true
+        set message = account found
+        select the  user account by using email
+
+ELSE
+    IF alreadyExist !=0
+        set result = true
+        set message = account created
+        create a new user account
+        select the newly created user account by using scope identity
+    ELSE
+        set result = false
+        set message = Email not available
+
+
+end note
+@enduml

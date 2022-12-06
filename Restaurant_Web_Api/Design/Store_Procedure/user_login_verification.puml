@@ -1,0 +1,44 @@
+@startuml
+
+title user_login_verification - Store Procedure
+autonumber
+hide footbox
+participant ConfigRepositary
+participant SQL
+
+ConfigRepositary -> SQL : user_login_verification( email, password ) 
+== Pseudo Code==
+
+hnote across
+
+Declare result as bit out
+Declare message as string out
+Declare IdCount as int
+Declare accountCount int
+
+set idCount = select the user account which match with given email
+set accountCount = select the user account which match with given email and password
+
+IF idCount > 0
+
+    IF accountCount == 1
+        set result = True
+        set message = "verified"
+        select the user account which match with given email and password
+
+    ELSE
+        set result = False
+        set message = "password wrong"
+
+ELSE
+    set result = false
+    set message = "Account not exist"
+
+
+
+select version data from version using platform parameter
+
+IF userId > 0
+    select user data from user table by using userId parameter
+end note
+@enduml

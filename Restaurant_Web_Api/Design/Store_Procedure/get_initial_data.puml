@@ -1,0 +1,21 @@
+@startuml
+
+title get_initial_data - Store Procedure
+autonumber
+hide footbox
+participant ConfigRepositary
+participant SQL
+
+ConfigRepositary -> SQL : get_initial_data 
+== Pseudo Code==
+
+hnote across
+
+selecte all config data from config table
+
+select version data from version using platform parameter
+
+IF userId > 0
+    select user data from user table by using userId parameter
+end note
+@enduml

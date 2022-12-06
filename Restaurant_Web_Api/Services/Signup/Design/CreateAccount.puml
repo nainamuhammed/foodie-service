@@ -9,9 +9,9 @@ participant SignupService #LightSeaGreen
 participant SignupRepository
 
 alt (try)
-    ServiceController -> SignupService : CreateAccount( UserBo)
+    ServiceController -> SignupService : CreateAccount( UserBo, googleUser)
 
-    SignupService -> SignupRepository : _signupRepository.CreateNewAccount( UserBo )
+    SignupService -> SignupRepository : _signupRepository.CreateNewAccount( UserBo, googleUser )
     
 
   
@@ -31,7 +31,7 @@ hnote across
 
 TRY
 
-        ASSIGN LoginResultBo signupResult = _signupRepository.CreateNewAccount(UserData)
+        ASSIGN LoginResultBo signupResult = _signupRepository.CreateNewAccount(UserData, googleUser)
         ** RETURN ServiceResult{ status = Success, data = signupResult } ** 
        
 CATCH

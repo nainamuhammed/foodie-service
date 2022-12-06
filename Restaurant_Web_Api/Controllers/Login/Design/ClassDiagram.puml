@@ -3,7 +3,6 @@
 class LoginController {
     + LoginService : ILoginService
     + UserLogin(string email, sting password) : IActionResult
-    + GoogleLogin (string email, string name) : IActionResult
     
 } 
 
@@ -24,7 +23,7 @@ package Helpers {
 package "Services" {
     interface ILoginService {
         + UserLogin(string email, sting password): ServiceResult<LoginResultBo>
-        + GoogleLogin(string email, sting name): ServiceResult<UserBo>
+        
     }
 }
 
@@ -32,7 +31,7 @@ package "Repository" {
     class LoginRepository {
     
         + VerifyUser(string email, string password): LoginResultBo
-        + GoogleLogin(string email, string name) : UserBo
+        
     }
 }
 
@@ -44,6 +43,8 @@ package Bos{
         + string PhoneNumber
         + string Password
         + DateTime Dob
+        + bool IsLocationOn
+        + bool IsNotificationOn
         + bool IsDeleted
     }
 

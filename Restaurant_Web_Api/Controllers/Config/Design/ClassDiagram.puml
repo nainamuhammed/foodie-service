@@ -1,7 +1,7 @@
 @startuml
 class ConfigController {
     + ConfigService : IConfigService
-    + GetAppInitialData(string platform, float version, int userId) : IActionResult
+    + GetAppInitialData(string platform, int userId) : IActionResult
     
 } 
 
@@ -21,7 +21,7 @@ package Helpers {
 
 package "Services" {
     interface IConfigService {
-        + GetAppInitialData(string platform, float version, int userId) : ServiceResult<InitialDataBo>
+        + GetAppInitialData(string platform, int userId) : ServiceResult<InitialDataBo>
     }
 }
 
@@ -40,7 +40,7 @@ package Bos{
         + string PhoneNumber
         + string Password
         + DateTime Dob
-        + bold IsLocationOn
+        + bool IsLocationOn
         + bool IsNotificationOn
         + bool IsDeleted
     }
@@ -74,8 +74,5 @@ ConfigRepository *-- IConfigService : uses
 
 InitialDataBo *-- ConfigRepository : uses
 InitialDataBo *-- IConfigService : uses
-
-
-
 
 @enduml

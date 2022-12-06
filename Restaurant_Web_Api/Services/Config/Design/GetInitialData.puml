@@ -9,7 +9,7 @@ participant ConfigRepository
 
     
 alt (TRY)
-    ServiceController -> ConfigService : GetAppInitialData( platform, version, userId )
+    ServiceController -> ConfigService : GetAppInitialData( platform, userId )
     ConfigService -> ConfigRepository : _configRepository.GetInitialData( platform, version, userId )
     
 
@@ -30,7 +30,7 @@ hnote across
 
 TRY
 
-    ASSIGN InitialDataBo initialDataresult = _configRepository.GetAppInitialData( platform, version, userId )
+    ASSIGN InitialDataBo initialDataresult = _configRepository.GetAppInitialData( platform, userId )
     
     ** RETURN ServiceResult{ status = Success, data = initialDataresult } ** 
        
